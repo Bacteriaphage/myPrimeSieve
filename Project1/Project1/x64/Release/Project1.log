@@ -1,0 +1,28 @@
+﻿Build started 2016/3/10 17:09:43.
+     1>Project "D:\Course\CPE593\ECE_challenge\myPrimeSieve\Project1\Project1\Project1.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         E:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Release\\" /Fd"x64\Release\vc140.pdb" /Gd /TP /errorReport:prompt Source.cpp
+         Source.cpp
+     1>Source.cpp(76): warning C4154: deletion of an array expression; conversion to pointer supplied
+     1>Source.cpp(138): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(142): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(144): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(173): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(175): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(182): warning C4244: 'initializing': conversion from '_ulong' to 'int', possible loss of data
+     1>Source.cpp(184): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(186): warning C4018: '<': signed/unsigned mismatch
+     1>Source.cpp(222): warning C4244: '=': conversion from 'double' to '_uint', possible loss of data
+       Link:
+         E:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Course\CPE593\ECE_challenge\myPrimeSieve\Project1\x64\Release\Project1.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"D:\Course\CPE593\ECE_challenge\myPrimeSieve\Project1\x64\Release\Project1.pdb" /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Course\CPE593\ECE_challenge\myPrimeSieve\Project1\x64\Release\Project1.lib" /MACHINE:X64 x64\Release\Source.obj
+         Generating code
+         2 of 20 functions (10.0%) were compiled, the rest were copied from previous compilation.
+           0 functions were new in current compilation
+           0 functions had inline decision re-evaluated but remain unchanged
+         Finished generating code
+         Project1.vcxproj -> D:\Course\CPE593\ECE_challenge\myPrimeSieve\Project1\x64\Release\Project1.exe
+     1>Done Building Project "D:\Course\CPE593\ECE_challenge\myPrimeSieve\Project1\Project1\Project1.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.76

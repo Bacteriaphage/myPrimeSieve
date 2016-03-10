@@ -1,0 +1,20 @@
+﻿Build started 2016/3/10 11:13:39.
+     1>Project "E:\cpe593\challege\Project1\Project1\Project1.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         E:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
+         Source.cpp
+     1>e:\cpe593\challege\project1\project1\source.cpp(76): warning C4154: deletion of an array expression; conversion to pointer supplied
+     1>e:\cpe593\challege\project1\project1\source.cpp(122): warning C4018: '<': signed/unsigned mismatch
+     1>e:\cpe593\challege\project1\project1\source.cpp(126): warning C4018: '<': signed/unsigned mismatch
+     1>e:\cpe593\challege\project1\project1\source.cpp(128): warning C4018: '<': signed/unsigned mismatch
+     1>e:\cpe593\challege\project1\project1\source.cpp(156): warning C4018: '<': signed/unsigned mismatch
+     1>e:\cpe593\challege\project1\project1\source.cpp(158): warning C4018: '<': signed/unsigned mismatch
+     1>e:\cpe593\challege\project1\project1\source.cpp(170): warning C4244: '=': conversion from '_ulong' to '_uint', possible loss of data
+       Link:
+         E:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\cpe593\challege\Project1\Debug\Project1.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"E:\cpe593\challege\Project1\Debug\Project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\cpe593\challege\Project1\Debug\Project1.lib" /MACHINE:X86 Debug\Source.obj
+         Project1.vcxproj -> E:\cpe593\challege\Project1\Debug\Project1.exe
+     1>Done Building Project "E:\cpe593\challege\Project1\Project1\Project1.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.34
