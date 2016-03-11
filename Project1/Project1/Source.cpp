@@ -108,6 +108,7 @@ _ulong sieve_base;
 _ulong sieve_limit;
 _ulong sieve_span;
 _ulong sieve[_sieve_word_];
+_ulong prime_counter = 0;
 void sieve_all(_ulong base, _ulong limit) {
 
 }
@@ -255,12 +256,11 @@ _ulong start_sieve(_ulong this_sieve_base) {
 
 int main() {
 	sieve_base = 0u;
-	sieve_limit = 100u;
+	sieve_limit = 16777300u;
 	sieve_span = (sieve_limit - sieve_base) / 128u + 1u;
-	aux_bound = sqrt(sieve_limit);
+	aux_bound = sqrt(sieve_limit)+1;
 	aux_sieve = new _ulong[aux_bound / 128u + 1u];
 	aux_sieve_words = aux_bound / 128u + 1u;
-	_ulong prime_counter = 0;
 	_ulong this_sieve_base = sieve_base;
 	bucketGenerator();
 	for (_uint i = 0; i < ((sieve_limit - sieve_base) / 128u + 1u) / _sieve_word_ + 1u; i++) {
