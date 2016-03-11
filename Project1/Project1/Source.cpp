@@ -13,6 +13,8 @@ using namespace std;
 typedef unsigned int       _uint;
 typedef unsigned long long _ulong;
 
+extern const unsigned char mask_16[65536];
+
 const _ulong mark_mask[64u] =
 {
 	0x0000000000000001ull,0x0000000000000002ull,0x0000000000000004ull,0x0000000000000008ull,
@@ -190,42 +192,79 @@ void init_sieve(_ulong this_sieve_base) {
 	}
 }
 
-void start_sieve(_ulong this_sieve_base) {
+_ulong count(_uint this_sieve_span) {
+	_uint index = 0;
+	_ulong now;
+	_ulong zero = 0;
+	_uint  j;
+	if (this_sieve_span == _sieve_word_) {
+		for (; index < this_sieve_span; index++) {
+			now = sieve[index];
+			for (j = 0; j < 4; j++) {
+				zero += mask_16[now & 0xffff];
+				now = now >> 16u;
+			}
+		}
+	}
+	else {
+		for (; index < this_sieve_span - 1; index++) {
+			now = sieve[index];
+			for (j = 0; j < 4; j++) {
+				zero += mask_16[now & 0xffff];
+				now = now >> 16u;
+			}
+		}
+		_uint offset = ((sieve_limit - sieve_base)/2) % 64;
+		for (;offset > 0; offset--) {
+			if (sieve[this_sieve_span - 1] | 0xfffffffffffffffe == 0xfffffffffffffffe)
+				zero++;
+		}
+	}
+	return zero;
+}
+
+_ulong start_sieve(_ulong this_sieve_base) {
 	init_sieve(this_sieve_base);
 	Bucket_List *doIt = availible_buck;
 	_uint prime_index = 0;
+	_uint this_sieve_span;
+	if (sieve_span > _sieve_word_) {
+		this_sieve_span = _sieve_word_;
+	}
+	else this_sieve_span = sieve_span;
 	if (doIt == nullptr) {
 		cout << "Bucket fail!";
-		return;
+		return -1;
 	}
-	while ((doIt->buck[prime_index].prime * doIt->buck[prime_index].prime) < (this_sieve_base + _sieve_word_ * 128u)) {
+	while ((doIt->buck[prime_index].prime * doIt->buck[prime_index].prime) < (this_sieve_base + this_sieve_span * 128u)) {
 		_uint o = doIt->buck[prime_index].offset;
 		_uint p = doIt->buck[prime_index].prime;
-		for (; o < _sieve_word_ * 64; o += p)
+		for (; o < this_sieve_span * 64; o += p)
 			mark_2(sieve, o);
-		doIt->buck[prime_index].offset = o - _sieve_word_ * 64;
+		doIt->buck[prime_index].offset = o - this_sieve_span * 64;
 		if (prime_index == doIt->size - 1u) {
 			if (doIt->next == nullptr)
 				break;
 			doIt = doIt->next;
 			prime_index = 0;
 		}
-		else prime_index++;
-		
+		else prime_index++;		
 	}
+	return count(this_sieve_span);
 }
 
 int main() {
-	sieve_base = 100000000000u;
-	sieve_limit = 200000000000u;
+	sieve_base = 0u;
+	sieve_limit = 100u;
 	sieve_span = (sieve_limit - sieve_base) / 128u + 1u;
 	aux_bound = sqrt(sieve_limit);
 	aux_sieve = new _ulong[aux_bound / 128u + 1u];
 	aux_sieve_words = aux_bound / 128u + 1u;
+	_ulong prime_counter = 0;
 	_ulong this_sieve_base = sieve_base;
 	bucketGenerator();
 	for (_uint i = 0; i < ((sieve_limit - sieve_base) / 128u + 1u) / _sieve_word_ + 1u; i++) {
-		start_sieve(this_sieve_base);
+		prime_counter += start_sieve(this_sieve_base);
 		this_sieve_base += _sieve_word_ * 128;
 		sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
 	}
