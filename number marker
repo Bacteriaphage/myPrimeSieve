@@ -1,0 +1,7 @@
+1. create a vector storing digits of this_sieve_base
+
+__ __ __ __ __ __ __ __ __ __.
+
+2. for one this_sieve_base and one _sieve_word_, we definitely can find the mark pattern.
+
+3. we need define different span according to different digits!
