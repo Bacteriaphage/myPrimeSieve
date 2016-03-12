@@ -1,7 +1,10 @@
 #include <iostream>
 #include <cmath>
+#include "config.h"
+#include "next_7_finder.h"
 using namespace std;
 
+#if 0
 #ifndef _pointer_size_
 #define _pointer_size_ 8u
 #endif
@@ -12,9 +15,12 @@ using namespace std;
 
 typedef unsigned int       _uint;
 typedef unsigned long long _ulong;
+#endif
 
 extern const unsigned char mask_16[65536];
-
+extern _u8 digits[20];
+extern bool consecutive;
+extern _ulong low, high;
 const _ulong mark_mask[64u] =
 {
 	0x0000000000000001ull,0x0000000000000002ull,0x0000000000000004ull,0x0000000000000008ull,
@@ -198,7 +204,23 @@ void init_sieve(_ulong this_sieve_base) {
 		}
 	}
 }
-
+void crossoff_7(_ulong this_sieve_base, _uint this_sieve_span) {
+	_ulong next;
+	_uint  offset;
+	_ulong this_sieve_limit = this_sieve_base + this_sieve_span * 128;
+	next = init_finder(this_sieve_base);
+	while (next < this_sieve_limit) {
+		if (consecutive == true) {
+			for (_ulong num = low; (num < high) && (num < this_sieve_limit); num += 2) {
+				offset = ((num - this_sieve_base) / 2);
+				mark_2(sieve, offset);
+			}
+		}
+		offset = (next - this_sieve_base) / 2;
+		mark_2(sieve, offset);
+		next = next_7();
+	}
+}
 _ulong count(_uint this_sieve_span) {
 	_uint index = 0;
 	_ulong now;
@@ -259,6 +281,7 @@ _ulong start_sieve(_ulong this_sieve_base) {
 		}
 		else prime_index++;
 	}
+	crossoff_7(this_sieve_base, this_sieve_span);
 	return count(this_sieve_span);
 }
 
@@ -272,10 +295,21 @@ int main() {
 	_ulong this_sieve_base = sieve_base;
 	bucketGenerator();
 	for (_uint i = 0; i < ((sieve_limit - sieve_base) / 128u + 1u) / _sieve_word_ + 1u; i++) {
+		init_finder(this_sieve_base);
+		if ((consecutive == 1) && high >(this_sieve_base + _sieve_word_ * 128) && this_sieve_base == low) continue;
 		prime_counter += start_sieve(this_sieve_base);
 		this_sieve_base += _sieve_word_ * 128;
 		sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
 	}
-	cout << prime_counter;
+//	cout << prime_counter;
+	_ulong current = 0;
+	cout << init_finder(current);
+	while (current < 1000) {
+		if (consecutive == true) {
+			cout << "[" << low << "," << high << "]" << " ";
+		}
+		current = next_7();
+		cout << current << " ";
+	}
 	return 0;
 }
