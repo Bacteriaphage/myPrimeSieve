@@ -9,8 +9,10 @@
 
 #include <iostream>
 #include <cmath>
+#include <time.h>
 #include "config.h"
 #include "next_7_finder.h"
+
 using namespace std;
 
 extern const unsigned char mask_16[65536];
@@ -46,7 +48,7 @@ const _ulong mark_mask[64u] =
 # define test_2(s,o)  (((s)[(o) >> 6u] & mark_mask[(o) & 63u]) == 0ull)
 # define unmark(s,o)  (s)[(o) >> 6u] &= ~mark_mask[(o) & 63u]
 
-_ulong pattern[3u * 5u * 7u * 11u * 13u];  // sieve initialization pattern
+_ulong pattern[3u * 5u * 7u * 11u * 13u];  // sieve initialization pattern 15015u
 
 //deal with small sieve_limit
 _uint smallprime[40]=
@@ -125,6 +127,7 @@ _ulong sieve_limit;
 _ulong sieve_span;
 _ulong sieve[_sieve_word_];
 _ulong prime_counter = 0;
+_ulong count_7 = 0;
 
 //use auxiliary sieve to generate Bucket_List
 _uint aux_bound;
@@ -221,16 +224,22 @@ void crossoff_7(_ulong this_sieve_base, _uint this_sieve_span) {
 	_ulong next;
 	_uint  offset;
 	_ulong this_sieve_limit = this_sieve_base + this_sieve_span * 128;
+	if (this_sieve_limit > sieve_limit) this_sieve_limit = sieve_limit;
 	next = init_finder(this_sieve_base);
-	while (next < this_sieve_limit) {
+	while (next <= this_sieve_limit || consecutive == true) {
 		if (consecutive == true) {
 			for (_ulong num = (low/2)*2+1; (num < high) && (num < this_sieve_limit); num += 2) {
 				offset = ((num - this_sieve_base) / 2);
+//				cout << num << '-' << offset << endl;
 				mark_2(sieve, offset);
+//				count_7++;
 			}
 		}
+		if (next > this_sieve_limit) break;
 		offset = (next - this_sieve_base) / 2;
+//		cout << next << '-' << offset << endl;
 		mark_2(sieve, offset);
+//		count_7++;
 		next = next_7();
 	}
 }
@@ -301,8 +310,20 @@ _ulong start_sieve(_ulong this_sieve_base) {
 }
 
 int main() {
-	sieve_base = 110000000u;
-	sieve_limit = 120000000u;
+	clock_t start, finish;
+	cout << "Fast sieve configuration: " << endl;
+	cout << "Max sieve segment: " << _sieve_word_ * 128 << endl;
+	cout << "number of threads: " << "1" << endl;
+	cout << "estimating sieve time: " << endl;
+	cout << "10^6          0.06s" << endl << "10^7          0.08s" << endl << "10^8          0.33s" << endl << "10^9          2.21s" << endl;
+	cout << "10^10         20.20s" << endl;
+	cout << "this test based on Microsoft Visual Studio 2015 Release x64!" << endl << endl;
+	cout << "please enter base and limit of your domain! " << endl;
+	cout << "base: ";
+	cin >> sieve_base;
+	cout << "limit: ";
+	cin >> sieve_limit;
+	start = clock();
 	sieve_span = (sieve_limit - sieve_base) / 128u + 1u;
 	aux_bound = sqrt(sieve_limit) + 1;
 	aux_sieve = new _ulong[aux_bound / 128u + 1u];
@@ -312,7 +333,12 @@ int main() {
 		bucketGenerator();
 		for (_uint i = 0; i < ((sieve_limit - sieve_base) / 128u + 1u) / _sieve_word_ + 1u; i++) {
 			init_finder(this_sieve_base);
-			if ((consecutive == 1) && high >(this_sieve_base + _sieve_word_ * 128) && this_sieve_base == low) continue;
+//          this still need improve!!!
+//			if ((consecutive == 1) && (high >(this_sieve_base + _sieve_word_ * 128)) && (this_sieve_base == low)) { 
+//				this_sieve_base += _sieve_word_ * 128;
+//				sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
+//				continue; 
+//			}
 			prime_counter += start_sieve(this_sieve_base);
 			this_sieve_base += _sieve_word_ * 128;
 			sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
@@ -322,6 +348,7 @@ int main() {
 			if (sieve_base < smallprime[i]) low_index++;
 		}
 		prime_counter += low_index;
+		cout << "number of prime excluding 7: ";
 		cout << prime_counter;
 
 	}
@@ -333,14 +360,15 @@ int main() {
 			if (sieve_base > smallprime[i]) low_index++;
 		}
 		prime_counter = high_index - low_index;
+		cout << "number of prime excluding 7: ";
 		cout << prime_counter;
 	}
-
-	
+	finish = clock();
+	cout << endl << "time: "<<(double)(finish - start) / CLOCKS_PER_SEC;
 #if 0
-	_ulong current = 0;
+	_ulong current = 23450000;
 	cout << init_finder(current);
-	while (current < 1000) {
+	while (current < 23456789) {
 		if (consecutive == true) {
 			cout << "[" << low << "," << high << "]" << " ";
 		}

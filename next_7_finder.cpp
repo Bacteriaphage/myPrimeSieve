@@ -7,6 +7,8 @@ extern _ulong high=0;
 
 _ulong init_finder(_ulong sieve_base) {
 	consecutive = false;
+	high = 0;
+	low = 0;
 	for (_u8 i = 0; i < 20; i++) {
 		digits[i] = 0;
 	}
@@ -49,8 +51,8 @@ _ulong init_finder(_ulong sieve_base) {
 			if (consecutive == true) {
 				high = 0;
 				digits[0] = 0;
-				for (i = 18; i >= 0; i--) {
-					high = high * 10 + digits[i];
+				for (_u8 h = 18; h >= 0; h--) {
+					high = high * 10 + digits[h];
 				}
 			}
 			digits[k] = 7;
@@ -58,33 +60,29 @@ _ulong init_finder(_ulong sieve_base) {
 		break;
 	}
 	default: {
-		if (digits[i] == 6) {
-			low = 0;
-			digits[i] = 8;
-			for (i = 18; i >= 0; i--) {
-				low = low * 10 + digits[i];
-			}
-			consecutive = true;
+		low = 0;	
+		for (_u8 h = 18; h >= 0; h--) {
+			low = low * 10 + digits[h];
 		}
-		else {
-			digits[i]++;
-		}
+		digits[i] = 8;
+		consecutive = true;
+
 		for (k = i - 1;k > 0; k--) {
 			digits[k] = 0;
 		}
 		if (consecutive == true) {
 			high = 0;
 			digits[0] = 0;
-			for (i = 18; i >= 0; i--) {
-				high = high * 10 + digits[i];
+			for (_u8 h = 18; h >= 0; h--) {
+				high = high * 10 + digits[h];
 			}
 		}
 		digits[k] = 7;
 		break;
 	}
 	}
-	for (i = 18; i >= 0; i--) {
-		current = current * 10 + digits[i];
+	for (_u8 h = 18; h >= 0; h--) {
+		current = current * 10 + digits[h];
 	}
 	return current;
 }
@@ -92,7 +90,10 @@ _ulong init_finder(_ulong sieve_base) {
 _ulong next_7() {
 	_u8 i,j,k;
 	_ulong current = 0;
-	if (consecutive == true) consecutive = false;
+	if (consecutive == true) { 
+		low = 0;
+		high = 0;
+		consecutive = false; }
 	for (j = 1; ;j++) {
 		if (digits[j] != 9) break;
 	}
@@ -115,14 +116,14 @@ _ulong next_7() {
 	if (consecutive == true) {
 		high = 0;
 		digits[0] = 0;
-		for (i = 18; i >= 0; i--) {
-			high = high * 10 + digits[i];
+		for (_u8 h = 18; h >= 0; h--) {
+			high = high * 10 + digits[h];
 		}
 	}
 	digits[k] = 7;
 
-	for (i = 18; i >= 0; i--) {
-		current = current * 10 + digits[i];
+	for (_u8 h = 18; h >= 0; h--) {
+		current = current * 10 + digits[h];
 	}
 	return current;
 }

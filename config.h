@@ -6,11 +6,11 @@
 #endif
 
 #ifndef _sieve_word_
-#define _sieve_word_ (1u << 17u)
+#define _sieve_word_ (1u << 12u)
 #endif
 
 typedef char			   _u8;
-typedef unsigned int       _uint;
+typedef unsigned long long _uint;
 typedef unsigned long long _ulong;
 
 #endif
