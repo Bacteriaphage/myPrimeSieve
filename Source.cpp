@@ -355,7 +355,7 @@ int main() {
 	else {
 		_uint low_index = 0;
 		_uint high_index = 0;
-		for (_uint i = 0;i < 42; i++) {
+		for (_uint i = 0;i < 40; i++) {
 			if (sieve_limit >= smallprime[i]) high_index++;
 			if (sieve_base > smallprime[i]) low_index++;
 		}
