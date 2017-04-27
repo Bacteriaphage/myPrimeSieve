@@ -22,7 +22,7 @@ extern _ulong low, high;
 
 //mark_mask is used to make pattern, crossoff non-prime and test 
 //reference: http://sweet.ua.pt/tos/software/prime_sieve.html
-const _ulong mark_mask[64u] =
+const _ulong mark_mask[64u] =                                   //a hash map liked data structure, can calculate number of 1
 {
 	0x0000000000000001ull,0x0000000000000002ull,0x0000000000000004ull,0x0000000000000008ull,
 	0x0000000000000010ull,0x0000000000000020ull,0x0000000000000040ull,0x0000000000000080ull,
@@ -62,7 +62,7 @@ _uint smallprime[40]=
 	241,251,263,269,281, 283
 };
 
-void init_pattern() {
+void init_pattern() {    //initialize a new range with pre-sieved domain
 	_uint i;
 
 	for (i = 0u;i < 3u * 5u * 7u * 11u * 13u;i++)
@@ -81,6 +81,7 @@ void init_pattern() {
 
 //Bucket data structure can store prime and offset of current prime in next sieve segment
 //reference: http://sweet.ua.pt/tos/software/prime_sieve.html
+//Bucket size should be designed as a cache friendly size
 class Bucket {
 public:
 	_uint prime;
