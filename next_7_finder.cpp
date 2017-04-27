@@ -1,6 +1,6 @@
 #include "next_7_finder.h"
 
-extern _u8 digits[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+extern _u8 digits[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};   //put each base digit into this, the last is a counter
 extern bool consecutive = false;
 extern _ulong low=0;
 extern _ulong high=0;
@@ -13,23 +13,23 @@ _ulong init_finder(_ulong sieve_base) {
 		digits[i] = 0;
 	}
 
-	while (sieve_base) {
+	while (sieve_base) {                           // put into array
 		digits[digits[19]] = (sieve_base % 10);
 		sieve_base = sieve_base / 10;
 		digits[19]++;
 	}
 	_u8 i, j, k;
 	_ulong current = 0;
-	for (i = digits[19] - 1; i >= 0; i--) {
+	for (i = digits[19] - 1; i >= 0; i--) {        //find the first 7, because this is initialize
 		if (digits[i] == 7) break;
 	}
 	switch (i) {
-	case -1: case 0: {
+	case -1: case 0: {                             //the least significant digit is 7 or no one is 7
 		if (digits[0] < 7) {
-			digits[0] = 7;
+			digits[0] = 7;                 //if the last one is less than 7, make it as 7
 		}
 		else {
-			for (j = 1; ;j++) {
+			for (j = 1; ;j++) {            //consider carry, find next number which contain 7
 				if (digits[j] != 9) break;
 			}
 			if (digits[j] == 6) {
@@ -84,7 +84,7 @@ _ulong init_finder(_ulong sieve_base) {
 	for (_u8 h = 18; h >= 0; h--) {
 		current = current * 10 + digits[h];
 	}
-	return current;
+	return current;                               //return the first 7 in this range 
 }
 
 _ulong next_7() {
