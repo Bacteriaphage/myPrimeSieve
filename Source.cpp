@@ -41,11 +41,19 @@ const _ulong mark_mask[64u] =                                   //a hash map lik
 	0x0100000000000000ull,0x0200000000000000ull,0x0400000000000000ull,0x0800000000000000ull,
 	0x1000000000000000ull,0x2000000000000000ull,0x4000000000000000ull,0x8000000000000000ull
 };
-
+/*
+void mark_1(pattern, i){
+	pattern[i >> 6u] |= (1ull << (i & 63u));
+}
+*/
 # define mark_1(s,o)  (s)[(o) >> 6u] |= (1ull << ((o) & 63u))
+
 # define test_1(s,o)  (((s)[(o) >> 6u] & (1ull << ((o) & 63u))) == 0ull)
+
 # define mark_2(s,o)  (s)[(o) >> 6u] |= mark_mask[(o) & 63u]
+
 # define test_2(s,o)  (((s)[(o) >> 6u] & mark_mask[(o) & 63u]) == 0ull)
+
 # define unmark(s,o)  (s)[(o) >> 6u] &= ~mark_mask[(o) & 63u]
 
 _ulong pattern[3u * 5u * 7u * 11u * 13u];  // sieve initialization pattern 15015u
@@ -110,6 +118,7 @@ public:
 
 Bucket_List* availible_buck = nullptr;
 
+//generate new bucket and link it to the end of bucket linked list
 Bucket_List* create_Bucket() {
 	if (availible_buck == nullptr) {
 		availible_buck = new Bucket_List;
@@ -123,10 +132,10 @@ Bucket_List* create_Bucket() {
 	}
 }
 
-_ulong sieve_base;
-_ulong sieve_limit;
-_ulong sieve_span;
-_ulong sieve[_sieve_word_];
+_ulong sieve_base;         //lower bound of range
+_ulong sieve_limit;        //upper bound of range
+_ulong sieve_span;         //how many long long element we need to store the whole range
+_ulong sieve[_sieve_word_];//one sieve segment
 _ulong prime_counter = 0;
 _ulong count_7 = 0;
 
@@ -161,7 +170,7 @@ void bucketGenerator() {
 	_uint k;
 	Bucket_List *b = availible_buck;
 	if (b != nullptr)
-		for (; b->next != nullptr; b = b->next);
+		for (; b->next != nullptr; b = b->next);// go to the last bucket list
 	init_pattern();
 	for (int i = 0u;i < aux_sieve_words;i += k)
 	{
