@@ -5,7 +5,7 @@
 #define _pointer_size_ 8u
 #endif
 
-#ifndef _sieve_word_
+#ifndef _sieve_word_            //_sieve_word_ is a parameter to manage how many long long type element in one segment
 #define _sieve_word_ (1u << 12u)
 #endif
 
