@@ -167,6 +167,7 @@ inline _uint find_next_offset(_ulong this_sieve_base, _uint prime) {
 }
 
 //use pattern and Eratosthenes sieve to generate auxiliary sieve array and Bucket
+//because the size of aux_size is sqrt(sieve_limit), it can fully generate prime numbers and their offset.
 void bucketGenerator() {
 	_uint k;
 	Bucket_List *b = availible_buck;
