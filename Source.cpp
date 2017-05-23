@@ -15,14 +15,14 @@
 
 using namespace std;
 
-extern const unsigned char mask_16[65536];
+extern const unsigned char mask_16[65536]; //a hash map liked data structure, map pattern to number of 1 in this pattern
 extern _u8 digits[20];
 extern bool consecutive;
 extern _ulong low, high;
 
 //mark_mask is used to make pattern, crossoff non-prime and test 
 //reference: http://sweet.ua.pt/tos/software/prime_sieve.html
-const _ulong mark_mask[64u] =                                   //a hash map liked data structure, can calculate number of 1
+const _ulong mark_mask[64u] =                                   
 {
 	0x0000000000000001ull,0x0000000000000002ull,0x0000000000000004ull,0x0000000000000008ull,
 	0x0000000000000010ull,0x0000000000000020ull,0x0000000000000040ull,0x0000000000000080ull,
@@ -69,7 +69,7 @@ _uint smallprime[40]=
 	199,211,223,229,233, 239,
 	241,251,263,269,281, 283
 };
-
+//initial pattern, set every multiple of prime as 0
 void init_pattern() {    //initialize a new range with pre-sieved domain
 	_uint i;
 
@@ -98,6 +98,7 @@ public:
 
 class Bucket_List {
 public:
+	//need to be cache friendly here
 	Bucket buck[(1u << 9u) - 1u];
 	_uint size;
 	Bucket_List * next;
@@ -146,11 +147,11 @@ _uint aux_sieve_words;
 
 inline _uint find_next_offset(_ulong this_sieve_base, _uint prime) {
 	_uint o;
-	_ulong t = static_cast<_ulong> (prime) * static_cast<_ulong> (prime);
+	_ulong t = static_cast<_ulong> (prime) * static_cast<_ulong> (prime); //next multiple we need take care
 	while (1) {
-		if (t < this_sieve_base + _sieve_word_ * 128u) {
+		if (t < this_sieve_base + _sieve_word_ * 128u) { //next multiple in this range
 			if (t > this_sieve_base)
-				o = static_cast<_uint> (t - this_sieve_base) >> 1u;       //offset of t
+				o = static_cast<_uint> (t - this_sieve_base) >> 1u;       //offset of t based on current base
 			else
 			{
 				o = prime - static_cast<_uint>(this_sieve_base % (static_cast<_ulong> (prime)));   //offset of prime first multiple
@@ -161,7 +162,7 @@ inline _uint find_next_offset(_ulong this_sieve_base, _uint prime) {
 			}
 			return o;
 		}
-		this_sieve_base += _sieve_word_ * 128u;
+		this_sieve_base += _sieve_word_ * 128u; //next multiple is not in current range, find it in next range
 	}
 }
 
@@ -172,6 +173,7 @@ void bucketGenerator() {
 	if (b != nullptr)
 		for (; b->next != nullptr; b = b->next);// go to the last bucket list
 	init_pattern();
+	//initial aux_sieve array with intialized pattern
 	for (int i = 0u;i < aux_sieve_words;i += k)
 	{
 		int j = aux_sieve_words - i;            // remaining sieve words
@@ -183,24 +185,28 @@ void bucketGenerator() {
 	}
 	_uint next_prime = 17;
 	_uint li;
+	//aux_sieve is a half-mature segment, it will gradually finished by this step. It is a checking array and a object array.
 	while (next_prime < aux_bound) {
-		li = next_prime / 2u;
-		if (test_2(aux_sieve, li)) {
+		li = next_prime / 2u;  //because we have already eliminate 2, the position of number we need to check should be half
+		if (test_2(aux_sieve, li)) { //if the next_prime is prime number.
+			//don`t have a bucket or bucket is full
 			if (b == nullptr || b->size == ((1u << 9u) - 1u)) {
 				b = create_Bucket();
 			}
+			//calculate next multiple position
 			_uint o = find_next_offset(sieve_base,next_prime);
+			//put the pair into bucket
 			b->addBucket(next_prime, o);
 			for (_uint i = (next_prime >> 1u);i < (aux_bound >> 1u);i += next_prime)
-				mark_2(aux_sieve, i);
+				mark_2(aux_sieve, i);  //update aux_sieve with the new next_sieve
 		}
 		next_prime += 2;
 	}
 }
 
-
+//pre-sieve the segment at the first time
 void init_sieve(_ulong this_sieve_base) {
-	_uint offset;
+	_uint offset; //the offset of this_sieve_base based on pattern. it determine where we start to pre-sieve the new segment
 	_uint k;
 	_uint j;
 	offset = this_sieve_base % (3u * 5u * 7u * 11u * 13u);
@@ -236,6 +242,7 @@ void crossoff_7(_ulong this_sieve_base, _uint this_sieve_span) {
 	_ulong this_sieve_limit = this_sieve_base + this_sieve_span * 128;
 	if (this_sieve_limit > sieve_limit) this_sieve_limit = sieve_limit;
 	next = init_finder(this_sieve_base);
+	//get a number contain 7 each time. meet a consecutive segment, directly do crossoff without call find_next function
 	while (next <= this_sieve_limit || consecutive == true) {
 		if (consecutive == true) {
 			for (_ulong num = (low/2)*2+1; (num < high) && (num < this_sieve_limit); num += 2) {
@@ -293,6 +300,7 @@ _ulong start_sieve(_ulong this_sieve_base) {
 	Bucket_List *doIt = availible_buck;
 	_uint prime_index = 0;
 	_uint this_sieve_span;
+	//this segment is not the last segment
 	if (sieve_span > _sieve_word_) {
 		this_sieve_span = _sieve_word_;
 	}
@@ -301,12 +309,16 @@ _ulong start_sieve(_ulong this_sieve_base) {
 		cout << "Bucket fail!";
 		return -1;
 	}
+	//traverse bucket list to get next prime multiple number and the offset, check if it is in this span
 	while ((doIt->buck[prime_index].prime * doIt->buck[prime_index].prime) < (this_sieve_base + this_sieve_span * 128u)) {
 		_uint o = doIt->buck[prime_index].offset;
 		_uint p = doIt->buck[prime_index].prime;
+		//for this prime, sieve it in this segment
 		for (; o < this_sieve_span * 64; o += p)
 			mark_2(sieve, o);
+		//update the offset for this prime number
 		doIt->buck[prime_index].offset = o - this_sieve_span * 64;
+		//go to next bucket list if we go to the end
 		if (prime_index == doIt->size - 1u) {
 			if (doIt->next == nullptr)
 				break;
@@ -340,15 +352,21 @@ int main() {
 	aux_sieve_words = aux_bound / 128u + 1u;
 	_ulong this_sieve_base = sieve_base;
 	if (sieve_limit > 288) {
+		//initialize bucket with a initializing aux_sieve_array.
 		bucketGenerator();
+		//traverse each segment
 		for (_uint i = 0; i < ((sieve_limit - sieve_base) / 128u + 1u) / _sieve_word_ + 1u; i++) {
+			//cross off 7 initialize
 			init_finder(this_sieve_base);
-//          this still need improve!!!
-//			if ((consecutive == 1) && (high >(this_sieve_base + _sieve_word_ * 128)) && (this_sieve_base == low)) { 
-//				this_sieve_base += _sieve_word_ * 128;
-//				sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
-//				continue; 
-//			}
+//			update: we cannot directly jump a large range which dominated by 7. because we nned make sure the bucket list
+//                              can be generated continueously. One way to do optimize is not count this kind of range. However, we need
+//                              traverse these range at least once.
+////                    this still need improve!!!
+////			if ((consecutive == 1) && (high >(this_sieve_base + _sieve_word_ * 128)) && (this_sieve_base == low)) { 
+////				this_sieve_base += _sieve_word_ * 128;
+////				sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
+////				continue; 
+////			}
 			prime_counter += start_sieve(this_sieve_base);
 			this_sieve_base += _sieve_word_ * 128;
 			sieve_span = (sieve_limit - this_sieve_base) / 128u + 1u;
